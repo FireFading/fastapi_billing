@@ -1,6 +1,6 @@
 import stackprinter
 import uvicorn
-from app.routers import users, balance
+from app.routers import balance, users
 from fastapi import FastAPI
 from fastapi_pagination import add_pagination
 
