@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.nox
+
+# Local development files
+.env
+venv/
+.vscode/
+.idea/
+
+# Dependency directories
+venv/
+venv*/
+*/venv/
+*/venv*/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg

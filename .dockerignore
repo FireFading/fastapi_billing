@@ -1,0 +1,26 @@
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore editor and IDE files
+.vscode
+.idea
+.github
+
+# Ignore local development files
+__pycache__
+*.pyc
+*.pyo
+
+# Ignore dependencies and build artifacts
+node_modules
+*.log
+*.lock
+*.env
+
+# Ignore Docker-specific files
+Dockerfile*
+docker-compose*
+.dockerignore
+
+tests/
