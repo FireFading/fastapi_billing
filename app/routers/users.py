@@ -15,14 +15,13 @@ security = HTTPBearer()
 
 @AuthJWT.load_config
 def get_jwt_settings():
-    print(jwt_settings)
     return jwt_settings
 
 
 @router.post(
     "/register/",
     status_code=status.HTTP_201_CREATED,
-    summary="Регистрация пользователя",
+    summary="Registration",
 )
 async def register(user: CreateUser, session: AsyncSession = Depends(get_session)):
     email = user.email
@@ -32,7 +31,7 @@ async def register(user: CreateUser, session: AsyncSession = Depends(get_session
     return {"email": email, "detail": messages.USER_CREATED}
 
 
-@router.post("/login/", status_code=status.HTTP_200_OK, summary="Авторизация, получение токенов")
+@router.post("/login/", status_code=status.HTTP_200_OK, summary="Authorization, get tokens")
 async def login(
     login_credentials: LoginCredentials,
     session: AsyncSession = Depends(get_session),
@@ -47,7 +46,7 @@ async def login(
     }
 
 
-@router.delete("/logout/", status_code=status.HTTP_200_OK, summary="Выход из аккаунта")
+@router.delete("/logout/", status_code=status.HTTP_200_OK, summary="Logout")
 async def logout(authorize: AuthJWT = Depends()):
     authorize.jwt_required()
     return {"detail": messages.USER_LOGOUT}
@@ -56,7 +55,7 @@ async def logout(authorize: AuthJWT = Depends()):
 @router.post(
     "/change-password/",
     status_code=status.HTTP_202_ACCEPTED,
-    summary="Изменение пароля",
+    summary="Change password",
 )
 async def change_password(
     data: UpdatePassword,

@@ -5,7 +5,8 @@ from sqlalchemy import create_engine, engine_from_config, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from app.models import *
+from app.models.users import *
+from app.models.balance import *
 from alembic import context
 from app.config import settings
 
