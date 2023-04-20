@@ -1,5 +1,7 @@
 ## features
 - JWT-authentication
+- toup user balance
+- all features test with `pytest`
 > ***
 
 
