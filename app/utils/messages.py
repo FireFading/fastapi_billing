@@ -13,6 +13,7 @@ class Messages:
     PROFILE_DELETED = "User deleted"
 
     WRONG_PASSWORD = "Wrong password"
+    WRONG_OLD_PASSWORD = "Wrong old password"
     PASSWORDS_NOT_MATCH = "Passwords don't match"
     PASSWORD_RESET = "Password reset"
     NEW_PASSWORD_SIMILAR_OLD = "New password is similar to old one"

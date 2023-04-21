@@ -9,7 +9,13 @@ from pytest_mock import MockerFixture
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from tests.settings import Urls, User, login_credentials_schema, register_user_schema
+from tests.settings import (
+    Urls,
+    login_credentials_schema,
+    register_user_schema,
+    top_up_balance_schema,
+    withdraw_balance_schema,
+)
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite://"
 
@@ -74,3 +80,12 @@ async def auth_client(register_user, client: AsyncGenerator | TestClient) -> Asy
 async def create_balance(auth_client, mocker: MockerFixture) -> AsyncGenerator:
     response = auth_client.post(Urls.create_balance)
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest_asyncio.fixture
+async def create_transactions(auth_client, create_balance):
+    response = auth_client.post(Urls.top_up_balance, json=top_up_balance_schema)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = auth_client.post(Urls.withdraw_balance, json=withdraw_balance_schema)
+    assert response.status_code == status.HTTP_200_OK

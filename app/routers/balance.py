@@ -96,8 +96,9 @@ async def get_balance_history(
     authorize.jwt_required()
     email = authorize.get_jwt_subject()
     user = await user_controller.get_or_404(email=email, session=session)
+    user_balance = await balance_controller.get_or_404(user_id=user.guid, session=session)
     return (
-        [ShowTransaction.from_orm(transaction) for transaction in user.balance.transactions]
-        if user.balance.transactions
+        [ShowTransaction.from_orm(transaction) for transaction in user_balance.transactions]
+        if user_balance.transactions
         else None
     )

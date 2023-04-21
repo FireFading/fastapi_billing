@@ -14,6 +14,7 @@ PUNCTUATION = set(punctuation)
 AVAILABLE_CHARS = ASCII_LOWERCASE | ASCII_UPPERCASE | DIGITS | PUNCTUATION
 
 MAX_NAME_LEN = 100
+MIN_NAME_LEN = 3
 
 
 def validate_password(password: str) -> str | ValueError:
@@ -37,6 +38,10 @@ def validate_password(password: str) -> str | ValueError:
 def validate_name(name: str | None = None) -> str | None | ValueError:
     if not name:
         return None
+    if len(name) < MIN_NAME_LEN:
+        raise ValueError(
+            f"Name field average min symbols :: {MIN_NAME_LEN}",
+        )
     if len(name) > MAX_NAME_LEN:
         raise ValueError(
             f"Name field average max symbols :: {MAX_NAME_LEN}",

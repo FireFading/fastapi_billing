@@ -9,6 +9,9 @@ from pydantic import BaseModel, EmailStr, validator
 class Email(BaseModel):
     email: EmailStr
 
+    class Config:
+        orm_mode = True
+
 
 class LoginCredentials(Email, BaseModel):
     password: str
@@ -57,9 +60,10 @@ class User(BaseModel):
 
 
 class UpdatePassword(BaseModel):
+    old_password: str
     password: str
     confirm_password: str
 
-    @validator("confirm_password")
-    def validate_password(cls, confirm_password: str) -> str | ValueError:
-        return validate_password(password=confirm_password)
+    @validator("confirm_password", "password")
+    def validate_password(cls, password: str) -> str | ValueError:
+        return validate_password(password=password)

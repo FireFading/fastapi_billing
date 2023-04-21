@@ -16,15 +16,15 @@ class BalanceController:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.BALANCE_NOT_FOUND)
         return user_balance
 
-    @classmethod
-    async def get_and_check(cls, user_id, session: AsyncSession, amount: float) -> BalanceModel | HTTPException:
-        user_balance = await cls.get_or_404(user_id=user_id, session=session)
-        if user_balance.deposit < amount:
+    @staticmethod
+    def check(deposit: float, amount: float) -> HTTPException | None:
+        if deposit < abs(amount):
+            print(deposit, amount)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=messages.INSUFFICIENT_FUNDS,
             )
-        return user_balance
+        return None
 
     @classmethod
     async def create(cls, user: UserModel, session: AsyncSession):
@@ -43,11 +43,9 @@ class BalanceController:
         session: AsyncSession,
         need_check: bool = False,
     ) -> float:
-        user_balance = (
-            await cls.get_and_check(user_id=user_id, session=session, amount=transaction_schema.amount)
-            if need_check
-            else await cls.get_or_404(user_id=user_id, session=session)
-        )
+        user_balance = await cls.get_or_404(user_id=user_id, session=session)
+        if need_check:
+            cls.check(deposit=user_balance.deposit, amount=transaction_schema.amount)
         await TransactionModel(**transaction_schema.dict(), user_id=user_id, balance=user_balance).create(
             session=session
         )

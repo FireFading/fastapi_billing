@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.schemas.users import User
+from app.schemas.users import Email
 from pydantic import BaseModel, validator
 
 
@@ -23,7 +23,7 @@ class TransactionWithdraw(BaseModel):
 class ShowTransaction(BaseModel):
     amount: float
     timestamp: datetime
-    user: User
+    user: Email
 
     class Config:
         orm_mode = True

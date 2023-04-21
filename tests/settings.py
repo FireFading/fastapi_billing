@@ -7,7 +7,8 @@ class User:
     password = "TestPassword123!"
     name = "TestName"
     phone = "89999999999"
-    wrong_password = "WrongPassword"
+    wrong_password = "WrongPassword123@"
+    new_password = "NewPassword123@"
 
 
 @dataclass
@@ -15,6 +16,7 @@ class Urls:
     login = "/accounts/login/"
     register = "/accounts/register/"
     logout = "/accounts/logout/"
+    change_password = "/accounts/change-password/"
     info = "/accounts/info/"
 
     create_balance = "/balance/create/"
@@ -37,3 +39,28 @@ wrong_login_credentials_schema = {"email": User.email, "password": User.wrong_pa
 
 top_up_balance_schema = {"amount": 100}
 withdraw_balance_schema = {"amount": -10}
+
+
+change_password_schema = {
+    "old_password": User.password,
+    "password": User.new_password,
+    "confirm_password": User.new_password,
+}
+
+wrong_change_password_schema = {
+    "old_password": User.password,
+    "password": User.new_password,
+    "confirm_password": User.wrong_password,
+}
+
+wrong_old_password_schema = {
+    "old_password": User.wrong_password,
+    "password": User.wrong_password,
+    "confirm_password": User.wrong_password,
+}
+
+only_old_passwords_schema = {
+    "old_password": User.password,
+    "password": User.password,
+    "confirm_password": User.password,
+}

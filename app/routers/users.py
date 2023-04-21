@@ -62,11 +62,16 @@ async def change_password(
     authorize.jwt_required()
     if data.password != data.confirm_password:
         raise HTTPException(
-            status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=messages.PASSWORDS_NOT_MATCH,
         )
     email = authorize.get_jwt_subject()
     user = await user_controller.get_or_404(email=email, session=session)
+    if not user.verify_password(password=data.old_password):
+        raise HTTPException(
+            status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            detail=messages.WRONG_OLD_PASSWORD,
+        )
     if user.verify_password(password=data.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
