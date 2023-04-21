@@ -1,6 +1,8 @@
 ## Features
 - JWT-authentication
 - user credentials validator (email, password, name, phone)
+- reset password with email verification provide
+- change password
 - top up user balance
 - withdraw money from balance
 - watch user balance
