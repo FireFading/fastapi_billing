@@ -22,3 +22,18 @@ class Urls:
     withdraw_balance = "/balance/withdraw/"
     deposit = "/balance/deposit/"
     history = "/balance/history/"
+
+
+register_user_schema = {
+    "email": User.email,
+    "name": User.name,
+    "phone": User.phone,
+    "password": User.password,
+}
+
+login_credentials_schema = {"email": User.email, "password": User.password}
+
+wrong_login_credentials_schema = {"email": User.email, "password": User.wrong_password}
+
+top_up_balance_schema = {"amount": 100}
+withdraw_balance_schema = {"amount": -10}

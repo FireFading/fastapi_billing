@@ -9,7 +9,7 @@ from pytest_mock import MockerFixture
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from tests.settings import Urls, User
+from tests.settings import Urls, User, login_credentials_schema, register_user_schema
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite://"
 
@@ -56,20 +56,21 @@ async def client(app: FastAPI, db_session: Session) -> AsyncGenerator | TestClie
 async def register_user(client: AsyncGenerator | TestClient, mocker: MockerFixture) -> AsyncGenerator:
     response = client.post(
         Urls.register,
-        json={
-            "email": User.email,
-            "name": User.name,
-            "phone": User.phone,
-            "password": User.password,
-        },
+        json=register_user_schema,
     )
     assert response.status_code == status.HTTP_201_CREATED
 
 
 @pytest_asyncio.fixture
 async def auth_client(register_user, client: AsyncGenerator | TestClient) -> AsyncGenerator | TestClient:
-    response = client.post(Urls.login, json={"email": User.email, "password": User.password})
+    response = client.post(Urls.login, json=login_credentials_schema)
     assert response.status_code == status.HTTP_200_OK
     access_token = response.json().get("access_token")
     client.headers.update({"Authorization": f"Bearer {access_token}"})
     yield client
+
+
+@pytest_asyncio.fixture
+async def create_balance(auth_client, mocker: MockerFixture) -> AsyncGenerator:
+    response = auth_client.post(Urls.create_balance)
+    assert response.status_code == status.HTTP_201_CREATED
