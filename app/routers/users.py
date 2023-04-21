@@ -1,7 +1,7 @@
 from app.config import jwt_settings
 from app.database import get_session
 from app.models.users import User as UserModel
-from app.schemas.users import CreateUser, LoginCredentials, UpdatePassword
+from app.schemas.users import CreateUser, LoginCredentials, UpdatePassword, User
 from app.utils.exceptions import get_user_or_404
 from app.utils.messages import messages
 from fastapi import APIRouter, Depends, HTTPException, Security, status
@@ -78,3 +78,15 @@ async def change_password(
         )
     await user.update(session=session)
     return {"detail": messages.PASSWORD_UPDATED}
+
+
+@router.get("/info/", status_code=status.HTTP_200_OK, summary="User info")
+async def get_user_info(
+    authorize: AuthJWT = Depends(),
+    session: AsyncSession = Depends(get_session),
+    credentials: HTTPAuthorizationCredentials = Security(security),
+):
+    authorize.jwt_required()
+    email = authorize.get_jwt_subject()
+    user = await get_user_or_404(email=email, session=session)
+    return User.from_orm(user)

@@ -20,8 +20,8 @@ class Balance(Base, CRUD):
     user = relationship("User", back_populates="balance", lazy="selectin")
     transactions = relationship("Transaction", back_populates="balance", lazy="selectin")
 
-    async def update(self, transaction_amount: float, session: AsyncSession):
-        self.amount += transaction_amount
+    async def update(self, transaction_amount: float, session: AsyncSession):  # type: ignore
+        self.deposit += transaction_amount
         return await super().update(session=session)
 
 
@@ -40,5 +40,5 @@ class Transaction(Base, CRUD):
     balance = relationship("Balance", back_populates="transactions")
 
     async def create(self, session: AsyncSession):
-        self.balance.update(transaction_amount=self.amount, session=session)
+        await self.balance.update(transaction_amount=self.amount, session=session)
         return await super().create(session=session)

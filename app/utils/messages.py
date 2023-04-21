@@ -18,7 +18,10 @@ class Messages:
     NEW_PASSWORD_SIMILAR_OLD = "New password is similar to old one"
     PASSWORD_UPDATED = "Password successfully updated"
 
-    BALANCE_TOP_UP = "Balance topup"
+    BALANCE_NOT_FOUND = "Balance not found"
+    BALANCE_TOP_UP = "Balance top up"
+    INSUFFICIENT_FUNDS = "Insufficient funds"
+    BALANCE_WITHDRAW = "Balance withdraw"
 
     ACCESS_DENIED = "Access denied"
 

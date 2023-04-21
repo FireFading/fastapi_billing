@@ -1,11 +1,9 @@
 ## Features
 - JWT-authentication
-- topup user balance
-### soon
-- watch user balance
+- top up user balance
 - withdraw money from balance
-- watch all transactions
-- transfer to another account
+- watch user balance
+- watch all transactions for balance
 - all features test with `pytest`
 
 ## Installation

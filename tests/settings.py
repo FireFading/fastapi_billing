@@ -15,5 +15,9 @@ class Urls:
     login = "/accounts/login/"
     register = "/accounts/register/"
     logout = "/accounts/logout/"
+    info = "/accounts/info/"
 
     top_up_balance = "/balance/top-up/"
+    withdraw_balance = "/balance/withdraw/"
+    deposit = "/balance/deposit/"
+    history = "/balance/history/"
