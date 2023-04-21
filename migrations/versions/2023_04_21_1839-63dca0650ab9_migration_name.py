@@ -1,8 +1,8 @@
-"""initial
+"""<migration name>
 
-Revision ID: f9d516a35baa
+Revision ID: 63dca0650ab9
 Revises: 
-Create Date: 2023-04-21 09:53:35.791292
+Create Date: 2023-04-21 18:39:44.065581
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy_utils
 
 
 # revision identifiers, used by Alembic.
-revision = 'f9d516a35baa'
+revision = '63dca0650ab9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,8 +32,8 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_guid'), 'users', ['guid'], unique=False)
     op.create_table('balances',
     sa.Column('guid', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
-    sa.Column('user_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True),
     sa.Column('deposit', sa.Float(), nullable=True),
+    sa.Column('user_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.guid'], ),
     sa.PrimaryKeyConstraint('guid')
     )
@@ -41,8 +41,9 @@ def upgrade() -> None:
     op.create_table('transactions',
     sa.Column('guid', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.Column('amount', sa.Float(), nullable=True),
-    sa.Column('user_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True),
-    sa.Column('balance_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=True),
+    sa.Column('timestamp', sa.DateTime(), nullable=True),
+    sa.Column('user_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
+    sa.Column('balance_id', sqlalchemy_utils.types.uuid.UUIDType(binary=False), nullable=False),
     sa.ForeignKeyConstraint(['balance_id'], ['balances.guid'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.guid'], ),
     sa.PrimaryKeyConstraint('guid')

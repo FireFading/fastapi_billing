@@ -15,3 +15,5 @@ class Urls:
     login = "/accounts/login/"
     register = "/accounts/register/"
     logout = "/accounts/logout/"
+
+    top_up_balance = "/balance/top-up/"

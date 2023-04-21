@@ -10,9 +10,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter(
-    prefix="/balance", tags=["balance"], responses={404: {"description": "Not found"}}
-)
+router = APIRouter(prefix="/balance", tags=["balance"], responses={404: {"description": "Not found"}})
 security = HTTPBearer()
 
 
@@ -21,11 +19,9 @@ def get_jwt_settings():
     return jwt_settings
 
 
-@router.post(
-    "/topup/", status_code=status.HTTP_200_OK, summary="Accruing funds to the balance"
-)
+@router.post("/top-up/", status_code=status.HTTP_200_OK, summary="Accruing funds to the balance")
 async def topup_balance(
-    topup: Transaction,
+    top_up: Transaction,
     credentials: HTTPAuthorizationCredentials = Security(security),
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
@@ -35,7 +31,6 @@ async def topup_balance(
     user = await get_user_or_404(email=email, session=session)
     if not (user_balance := await ModelBalance.get(session=session, user_id=user.guid)):
         user_balance = await ModelBalance(user_id=user.guid).create(session=session)
-    await ModelTransaction(
-        **topup.dict(), user_id=user.guid, balance_id=user_balance.guid
-    ).add_money_to_balance(session=session)
-    return {"balance": user_balance.deposit, "detail": messages.BALANCE_TOPUP}
+    print(user_balance)
+    await ModelTransaction(**top_up.dict(), user_id=user.guid, balance=user_balance).create(session=session)
+    return {"balance": user_balance.deposit, "detail": messages.BALANCE_TOP_UP}
