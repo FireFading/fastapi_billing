@@ -9,14 +9,14 @@ from sqlalchemy_utils import UUIDType
 
 
 class Balance(Base, CRUD):
-    __tablename__ = "balance"
+    __tablename__ = "balances"
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"))
     user = relationship("User", back_populates="balance")
-    transaction_id = Column(UUIDType(binary=False), ForeignKey("transactions.guid"), nullable=True)
-    transaction = relationship("Transaction", back_populates="balance")
     deposit = Column(Float, default=0)
+
+    transactions = relationship("Balance",  lazy="joined", backref="balance")
 
 
 class Transaction(Base):
@@ -26,7 +26,9 @@ class Transaction(Base):
     amount = Column(Float)
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"))
     user = relationship("User", back_populates="transactions")
-    balance = relationship("Balance", back_populates="transaction", uselist=False)
+
+    balance_id = Column(UUIDType(binary=False), ForeignKey("balances.guid"))
+    balance = relationship("User", back_populates="transactions")
 
     async def add_money_to_balance(self, session: AsyncSession):
         session.add(self)

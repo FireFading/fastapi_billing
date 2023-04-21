@@ -12,14 +12,16 @@ from sqlalchemy_utils import UUIDType
 class User(Base, CRUD):
     __tablename__ = "users"
 
-    guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
+    guid = Column(
+        UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4
+    )
     email = Column(String, unique=True)
     phone = Column(String, unique=True, nullable=True)
     password = Column(String)
     name = Column(String, unique=False, nullable=True)
 
     balance = relationship("Balance", lazy="joined", backref="owner", uselist=False)
-    transactions = relationship("Transaction", lazy="joined", backref="author")
+    transactions = relationship("Transaction", back_populates="user")  # Added this line
 
     def __repr__(self):
         return f"User {self.email}"
@@ -29,7 +31,9 @@ class User(Base, CRUD):
         return hashed_password.decode()
 
     def verify_password(self, password: str) -> bool:
-        return bcrypt.checkpw(password=password.encode(), hashed_password=self.password.encode())
+        return bcrypt.checkpw(
+            password=password.encode(), hashed_password=self.password.encode()
+        )
 
     async def create(self, session: AsyncSession):
         self.password = self.get_hashed_password()
