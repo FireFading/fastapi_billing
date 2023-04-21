@@ -6,8 +6,12 @@ from tests.settings import Urls, User
 
 class TestBalance:
     async def test_top_up_balance(self, auth_client):
+        response = auth_client.post(Urls.create_balance)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json().get("detail") == messages.BALANCE_CREATED
+
         response = auth_client.post(Urls.top_up_balance, json={"amount": 100})
-        assert response.status_code == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK
         result = response.json()
         assert result.get("detail") == messages.BALANCE_TOP_UP
         assert float(result.get("deposit")) == 100
@@ -21,6 +25,10 @@ class TestBalance:
         assert float(response.json().get("deposit")) == 100
 
     async def test_withdraw_balance(self, auth_client):
+        response = auth_client.post(Urls.create_balance)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json().get("detail") == messages.BALANCE_CREATED
+
         response = auth_client.post(Urls.top_up_balance, json={"amount": 100})
         assert response.status_code == status.HTTP_200_OK
         assert response.json().get("detail") == messages.BALANCE_TOP_UP

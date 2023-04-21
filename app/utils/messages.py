@@ -19,6 +19,8 @@ class Messages:
     PASSWORD_UPDATED = "Password successfully updated"
 
     BALANCE_NOT_FOUND = "Balance not found"
+    BALANCE_ALREADY_EXISTS = "Balance already exists"
+    BALANCE_CREATED = "Balance successfully created"
     BALANCE_TOP_UP = "Balance top up"
     INSUFFICIENT_FUNDS = "Insufficient funds"
     BALANCE_WITHDRAW = "Balance withdraw"

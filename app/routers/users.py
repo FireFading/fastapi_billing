@@ -1,8 +1,7 @@
 from app.config import jwt_settings
+from app.controllers.users import user_controller
 from app.database import get_session
-from app.models.users import User as UserModel
 from app.schemas.users import CreateUser, LoginCredentials, UpdatePassword, User
-from app.utils.exceptions import get_user_or_404
 from app.utils.messages import messages
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -23,12 +22,9 @@ def get_jwt_settings():
     status_code=status.HTTP_201_CREATED,
     summary="Registration",
 )
-async def register(user: CreateUser, session: AsyncSession = Depends(get_session)):
-    email = user.email
-    if await UserModel.get(session=session, email=email):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.USER_ALREADY_EXISTS)
-    await UserModel(**user.dict()).create(session=session)
-    return {"email": email, "detail": messages.USER_CREATED}
+async def register(user_schema: CreateUser, session: AsyncSession = Depends(get_session)):
+    await user_controller.create(user_schema=user_schema, session=session)
+    return {"email": user_schema.email, "detail": messages.USER_CREATED}
 
 
 @router.post("/login/", status_code=status.HTTP_200_OK, summary="Authorization, get tokens")
@@ -37,7 +33,7 @@ async def login(
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
 ):
-    user = await get_user_or_404(email=login_credentials.email, session=session)
+    user = await user_controller.get_or_404(email=login_credentials.email, session=session)
     if not user.verify_password(password=login_credentials.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.WRONG_PASSWORD)
     return {
@@ -70,7 +66,7 @@ async def change_password(
             detail=messages.PASSWORDS_NOT_MATCH,
         )
     email = authorize.get_jwt_subject()
-    user = await get_user_or_404(email=email, session=session)
+    user = await user_controller.get_or_404(email=email, session=session)
     if user.verify_password(password=data.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -88,5 +84,5 @@ async def get_user_info(
 ):
     authorize.jwt_required()
     email = authorize.get_jwt_subject()
-    user = await get_user_or_404(email=email, session=session)
+    user = await user_controller.get_or_404(email=email, session=session)
     return User.from_orm(user)
