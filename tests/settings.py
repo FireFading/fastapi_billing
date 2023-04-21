@@ -1,4 +1,9 @@
 from dataclasses import dataclass
+from datetime import datetime
+
+import jwt
+from app.config import settings
+from app.controllers.users import user_controller
 
 
 @dataclass
@@ -18,6 +23,8 @@ class Urls:
     logout = "/accounts/logout/"
     change_password = "/accounts/change-password/"
     info = "/accounts/info/"
+    forgot_password = "/accounts/forgot-password/"
+    reset_password = "/accounts/reset-password/"
 
     create_balance = "/balance/create/"
     top_up_balance = "/balance/top-up/"
@@ -25,6 +32,13 @@ class Urls:
     deposit = "/balance/deposit/"
     history = "/balance/history/"
 
+
+def create_fake_token(expires_in: datetime = datetime(1999, 1, 1), email: str = User.email) -> str:
+    to_encode = {"exp": expires_in, "email": email, "is_active": True}
+    return jwt.encode(to_encode, settings.secret_key, settings.algorithm)
+
+
+reset_password_token = user_controller.create_token(email=User.email)
 
 register_user_schema = {
     "email": User.email,

@@ -12,6 +12,22 @@ class Settings(BaseSettings):
     postgres_user: str = Field(env="POSTGRES_USER")
     postgres_password: str = Field(env="POSTGRES_PASSWORD")
 
+    token_expires_hours: int = Field(env="TOKEN_EXPIRES_HOURS")
+    algorithm: str = Field(env="ALGORITHM")
+    secret_key: str = Field(env="SECRET_KEY")
+
+    mail_username: str = Field(env="MAIL_USERNAME")
+    mail_password: str = Field(env="MAIL_PASSWORD")
+    mail_port: int = Field(env="MAIL_PORT")
+    mail_server: str = Field(env="MAIL_SERVER")
+    mail_starttls: bool = Field(env="MAIL_STARTTLS")
+    mail_ssl_tls: bool = Field(env="MAIL_SSL_TLS")
+    mail_from: str = Field(env="MAIL_FROM")
+    mail_from_name: str = Field(env="MAIL_FROM_NAME")
+    mail_validate_certs: bool = Field(env="MAIL_VALIDATE_CERT")
+
+    domain_name: str = Field(env="DOMAIN_NAME", default="localhost")
+
     class Config:
         env_file = "../.env.example"
 

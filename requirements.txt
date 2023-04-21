@@ -15,4 +15,4 @@ sqlalchemy
 sqlalchemy_utils
 stackprinter
 uvicorn
-
+fastapi_mail

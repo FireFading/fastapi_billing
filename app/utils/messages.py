@@ -18,6 +18,7 @@ class Messages:
     PASSWORD_RESET = "Password reset"
     NEW_PASSWORD_SIMILAR_OLD = "New password is similar to old one"
     PASSWORD_UPDATED = "Password successfully updated"
+    RESET_PASSWORD_MAIL_SENT = "Reset password mail sent"
 
     BALANCE_NOT_FOUND = "Balance not found"
     BALANCE_ALREADY_EXISTS = "Balance already exists"

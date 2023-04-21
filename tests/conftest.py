@@ -49,7 +49,9 @@ async def db_session(app: FastAPI) -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture
-async def client(app: FastAPI, db_session: Session) -> AsyncGenerator | TestClient:
+async def client(app: FastAPI, db_session: Session, mocker: MockerFixture) -> AsyncGenerator | TestClient:
+    mocker.patch("app.routers.users.send_mail", return_value=True)
+
     async def _get_test_db():
         yield db_session
 
@@ -59,7 +61,7 @@ async def client(app: FastAPI, db_session: Session) -> AsyncGenerator | TestClie
 
 
 @pytest_asyncio.fixture
-async def register_user(client: AsyncGenerator | TestClient, mocker: MockerFixture) -> AsyncGenerator:
+async def register_user(client: AsyncGenerator | TestClient) -> AsyncGenerator:
     response = client.post(
         Urls.register,
         json=register_user_schema,

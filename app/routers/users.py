@@ -1,7 +1,8 @@
 from app.config import jwt_settings
 from app.controllers.users import user_controller
 from app.database import get_session
-from app.schemas.users import CreateUser, LoginCredentials, UpdatePassword, User
+from app.schemas.users import CreateUser, Email, LoginCredentials, UpdatePassword, User
+from app.utils.mail import html_reset_password_mail, send_mail
 from app.utils.messages import messages
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -79,6 +80,43 @@ async def change_password(
         )
     await user.update(session=session)
     return {"detail": messages.PASSWORD_UPDATED}
+
+
+@router.post(
+    "/forgot-password/",
+    status_code=status.HTTP_202_ACCEPTED,
+    summary="Запрос на получение письма с токеном для сброса пароля",
+)
+async def forgot_password(data: Email, session: AsyncSession = Depends(get_session)):
+    user = await user_controller.get_or_404(email=data.email, session=session)
+    reset_password_token = user_controller.create_token(email=user.email)
+    subject = "Reset password"
+    recipients = [user.email]
+    body = html_reset_password_mail(reset_password_token=reset_password_token)
+    await send_mail(subject=subject, recipients=recipients, body=body)
+    return {"detail": messages.RESET_PASSWORD_MAIL_SENT}
+
+
+@router.post(
+    "/reset-password/{token}",
+    status_code=status.HTTP_202_ACCEPTED,
+    summary="Сброс пароля",
+)
+async def reset_password(token: str, data: UpdatePassword, session: AsyncSession = Depends(get_session)):
+    if not user_controller.verify_token(token=token):
+        raise HTTPException(
+            status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            detail=messages.INVALID_TOKEN,
+        )
+    email = user_controller.get_email_from_token(token=token)
+    user = await user_controller.get_or_404(email=email, session=session)
+    if data.password != data.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+            detail=messages.PASSWORDS_NOT_MATCH,
+        )
+    await user.update(session=session)
+    return {"detail": messages.PASSWORD_RESET}
 
 
 @router.get("/info/", status_code=status.HTTP_200_OK, summary="User info")
