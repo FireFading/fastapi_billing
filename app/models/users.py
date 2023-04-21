@@ -5,6 +5,7 @@ from app.crud import CRUD
 from app.database import Base
 from sqlalchemy import Column, String
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType
 
 
@@ -17,7 +18,8 @@ class User(Base, CRUD):
     password = Column(String)
     name = Column(String, unique=False, nullable=True)
 
-    # balance = relationship("Balance", lazy="joined", backref="user", uselist=False)
+    balance = relationship("Balance", lazy="joined", backref="owner", uselist=False)
+    transactions = relationship("Transaction", lazy="joined", backref="author")
 
     def __repr__(self):
         return f"User {self.email}"

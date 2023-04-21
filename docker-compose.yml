@@ -18,7 +18,7 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres
+    image: postgres:15-bullseye
     container_name: postgres
     ports:
       - "5432:5432"
@@ -26,6 +26,9 @@ services:
       - .env.example
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     volumes:
       - postgres_data:/var/lib/postgresql/data:cached
     networks:
