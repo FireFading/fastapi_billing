@@ -38,18 +38,24 @@ class BalanceController:
     @classmethod
     async def update(
         cls,
-        user_id,
+        user_id: uuid.UUID,
         transaction_schema: TransactionTopUp | TransactionWithdraw,
         session: AsyncSession,
+        recipient_id: uuid.UUID | None = None,
         need_check: bool = False,
     ) -> float:
-        user_balance = await cls.get_or_404(user_id=user_id, session=session)
+        recipient_balance = await cls.get_or_404(
+            user_id=user_id if recipient_id is None else recipient_id, session=session
+        )
         if need_check:
-            cls.check(deposit=user_balance.deposit, amount=transaction_schema.amount)
-        await TransactionModel(**transaction_schema.dict(), user_id=user_id, balance=user_balance).create(
+            sender_balance = (
+                await cls.get_or_404(user_id=user_id, session=session) if recipient_id else recipient_balance
+            )
+            cls.check(deposit=sender_balance.deposit, amount=transaction_schema.amount)
+        await TransactionModel(**transaction_schema.dict(), user_id=user_id, balance=recipient_balance).create(
             session=session
         )
-        return user_balance.deposit
+        return recipient_balance.deposit
 
 
 balance_controller = BalanceController()

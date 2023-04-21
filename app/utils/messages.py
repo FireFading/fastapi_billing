@@ -27,6 +27,8 @@ class Messages:
     INSUFFICIENT_FUNDS = "Insufficient funds"
     BALANCE_WITHDRAW = "Balance withdraw"
 
+    TRANSFER_SUCCESSFUL = "Transfer successful"
+
     ACCESS_DENIED = "Access denied"
 
 

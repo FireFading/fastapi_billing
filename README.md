@@ -7,6 +7,7 @@
 - withdraw money from balance
 - watch user balance
 - watch all transactions for balance
+- transfer money between users
 - all features test with `pytest`
 
 ## Installation
