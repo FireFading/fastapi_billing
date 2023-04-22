@@ -10,6 +10,7 @@
 - watch all transactions for balance
 - transfer money between users
 - tracking prices for currencies
+- integration with external api to get information about currencies, responses get with aiohttp and aiodns asynchronously
 - all features test with `pytest`
 
 ## Installation
