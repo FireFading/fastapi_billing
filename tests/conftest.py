@@ -15,6 +15,8 @@ from tests.settings import (
     register_user_schema,
     top_up_balance_schema,
     withdraw_balance_schema,
+    register_user_schema2,
+    login_credentials_schema2
 )
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite://"
@@ -67,6 +69,22 @@ async def register_user(client: AsyncGenerator | TestClient) -> AsyncGenerator:
         json=register_user_schema,
     )
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest_asyncio.fixture
+async def another_user(client: AsyncGenerator | TestClient) -> AsyncGenerator:
+    response = client.post(
+        Urls.register,
+        json=register_user_schema2,
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    response = client.post(Urls.login, json=login_credentials_schema2)
+    assert response.status_code == status.HTTP_200_OK
+    access_token = response.json().get("access_token")
+    client.headers.update({"Authorization": f"Bearer {access_token}"})
+    response = client.post(Urls.create_balance)
+    assert response.status_code == status.HTTP_201_CREATED
+    client.headers.update({"Authorization": ""})
 
 
 @pytest_asyncio.fixture

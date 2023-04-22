@@ -32,8 +32,12 @@ class Urls:
     deposit = "/balance/deposit/"
     history = "/balance/history/"
 
+    transfer = "/transfers/"
 
-def create_fake_token(expires_in: datetime = datetime(1999, 1, 1), email: str = User.email) -> str:
+
+def create_fake_token(
+    expires_in: datetime = datetime(1999, 1, 1), email: str = User.email
+) -> str:
     to_encode = {"exp": expires_in, "email": email, "is_active": True}
     return jwt.encode(to_encode, settings.secret_key, settings.algorithm)
 
@@ -47,13 +51,27 @@ register_user_schema = {
     "password": User.password,
 }
 
+register_user_schema2 = {
+    "email": "another@mail.ru",
+    "name": User.name,
+    "phone": "891209029301",
+    "password": User.password,
+}
+
 login_credentials_schema = {"email": User.email, "password": User.password}
+login_credentials_schema2 = {
+    "email": register_user_schema2.get("email"),
+    "password": User.password,
+}
 
 wrong_login_credentials_schema = {"email": User.email, "password": User.wrong_password}
 
 top_up_balance_schema = {"amount": 100}
 withdraw_balance_schema = {"amount": -10}
 
+transfer_schema = {"to": register_user_schema2.get("email"), "amount": -70}
+
+balance_after_transactions = top_up_balance_schema.get("amount") + withdraw_balance_schema.get("amount")
 
 change_password_schema = {
     "old_password": User.password,

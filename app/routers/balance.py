@@ -44,7 +44,7 @@ async def top_up_balance(
     authorize.jwt_required()
     user = await user_controller.get_or_404(email=authorize.get_jwt_subject(), session=session)
     deposit = await balance_controller.update(
-        user_id=user.guid,
+        user=user,
         session=session,
         transaction_schema=top_up_schema,
     )
@@ -79,7 +79,7 @@ async def withdraw_balance(
     email = authorize.get_jwt_subject()
     user = await user_controller.get_or_404(email=email, session=session)
     deposit = await balance_controller.update(
-        user_id=user.guid,
+        user=user,
         session=session,
         transaction_schema=withdraw_schema,
         need_check=True,

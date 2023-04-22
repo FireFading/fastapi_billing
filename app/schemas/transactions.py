@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app.schemas.users import Email
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, EmailStr
 
 
 class TransactionTopUp(BaseModel):
@@ -18,6 +18,10 @@ class TransactionWithdraw(BaseModel):
     @validator("amount")
     def validate_amount(cls, amount: float):
         return ValueError("Amount must be smaller than 0") if amount >= 0 else amount
+
+
+class Transfer(TransactionWithdraw):
+    to: EmailStr
 
 
 class ShowTransaction(BaseModel):
