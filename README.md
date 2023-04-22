@@ -9,6 +9,7 @@
 - watch user balance
 - watch all transactions for balance
 - transfer money between users
+- tracking prices for currencies
 - all features test with `pytest`
 
 ## Installation

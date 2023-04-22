@@ -33,3 +33,9 @@ class ShowTransaction(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class TransactionParams(BaseModel):
+    amount: float
+    currency: str = "USD"
+    date: datetime

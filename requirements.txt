@@ -3,6 +3,7 @@ stackprinter
 aiosqlite
 sqlalchemy
 sqlalchemy_utils
+babel
 asyncpg
 psycopg2-binary
 alembic

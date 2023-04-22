@@ -6,7 +6,7 @@ from app.database import Base
 from sqlalchemy import Column, DateTime, Float, ForeignKey
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
-from sqlalchemy_utils import UUIDType, CurrencyType
+from sqlalchemy_utils import CurrencyType, UUIDType
 
 
 class Balance(Base, CRUD):
@@ -14,7 +14,7 @@ class Balance(Base, CRUD):
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     deposit = Column(Float, default=0)
-    currency = Column(CurrencyType, nullable=False, default='USD')
+    currency = Column(CurrencyType, nullable=False, default="USD")
 
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"))
 
@@ -34,7 +34,7 @@ class Transaction(Base, CRUD):
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     amount = Column(Float)
-    currency = Column(CurrencyType, nullable=False, default='USD')
+    currency = Column(CurrencyType, nullable=False, default="USD")
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"), nullable=False)

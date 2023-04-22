@@ -2,21 +2,15 @@ from app.config import jwt_settings
 from app.controllers.balance import balance_controller
 from app.controllers.users import user_controller
 from app.database import get_session
-from app.schemas.transactions import (
-    ShowTransaction,
-    TransactionTopUp,
-    TransactionWithdraw,
-)
 from app.schemas.balance import CreateBalance
+from app.schemas.transactions import ShowTransaction, TransactionTopUp, TransactionWithdraw
 from app.utils.messages import messages
 from fastapi import APIRouter, Depends, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter(
-    prefix="/balance", tags=["balance"], responses={404: {"description": "Not found"}}
-)
+router = APIRouter(prefix="/balance", tags=["balance"], responses={404: {"description": "Not found"}})
 security = HTTPBearer()
 
 
@@ -34,9 +28,7 @@ async def create_balance(
 ):
     print(balance_schema)
     authorize.jwt_required()
-    user = await user_controller.get_or_404(
-        email=authorize.get_jwt_subject(), session=session
-    )
+    user = await user_controller.get_or_404(email=authorize.get_jwt_subject(), session=session)
     await balance_controller.create(user=user, balance_schema=balance_schema, session=session)  # type: ignore
     return {"detail": messages.BALANCE_CREATED}
 
@@ -53,9 +45,7 @@ async def top_up_balance(
     authorize: AuthJWT = Depends(),
 ):
     authorize.jwt_required()
-    user = await user_controller.get_or_404(
-        email=authorize.get_jwt_subject(), session=session
-    )
+    user = await user_controller.get_or_404(email=authorize.get_jwt_subject(), session=session)
     deposit = await balance_controller.update(
         user=user,  # type: ignore
         session=session,
@@ -64,9 +54,7 @@ async def top_up_balance(
     return {"deposit": deposit, "detail": messages.BALANCE_TOP_UP}
 
 
-@router.get(
-    "/deposit/", status_code=status.HTTP_200_OK, summary="Get amount of deposit balance"
-)
+@router.get("/deposit/", status_code=status.HTTP_200_OK, summary="Get amount of deposit balance")
 async def get_deposit_amount(
     credentials: HTTPAuthorizationCredentials = Security(security),
     session: AsyncSession = Depends(get_session),
@@ -75,9 +63,7 @@ async def get_deposit_amount(
     authorize.jwt_required()
     email = authorize.get_jwt_subject()
     user = await user_controller.get_or_404(email=email, session=session)
-    user_balance = await balance_controller.get_or_404(
-        user_id=user.guid, session=session
-    )
+    user_balance = await balance_controller.get_or_404(user_id=user.guid, session=session)
     return {"deposit": user_balance.deposit}
 
 
@@ -104,11 +90,9 @@ async def withdraw_balance(
     return {"deposit": deposit, "detail": messages.BALANCE_WITHDRAW}
 
 
-@router.get(
-    "/history/", status_code=status.HTTP_200_OK, summary="Get history of transactions"
-)
+@router.get("/history/", status_code=status.HTTP_200_OK, summary="Get history of transactions")
 async def get_balance_history(
-    balance_schema: CreateBalance = Depends(),
+    params: CreateBalance = Depends(),
     credentials: HTTPAuthorizationCredentials = Security(security),
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
@@ -116,14 +100,9 @@ async def get_balance_history(
     authorize.jwt_required()
     email = authorize.get_jwt_subject()
     user = await user_controller.get_or_404(email=email, session=session)
-    user_balance = await balance_controller.get_or_404(
-        user_id=user.guid, currency=balance_schema.currency, session=session
-    )
+    user_balance = await balance_controller.get_or_404(user_id=user.guid, currency=params.currency, session=session)
     return (
-        [
-            ShowTransaction.from_orm(transaction)
-            for transaction in user_balance.transactions
-        ]
+        [ShowTransaction.from_orm(transaction) for transaction in user_balance.transactions]
         if user_balance.transactions
         else None
     )
