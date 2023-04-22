@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.models.users import *
 from app.models.balance import *
+from app.models.currencies import *
 from alembic import context
 from app.config import settings
 
@@ -57,7 +58,7 @@ async def run_migrations_online() -> None:
     and associate a connection with the context.
     """
     connectable = AsyncEngine(
-        create_engine(settings.database_url, echo=True, future=True)
+        create_engine(settings.database_url, echo=False, future=True)
     )
 
     async with connectable.connect() as connection:

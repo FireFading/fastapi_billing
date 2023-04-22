@@ -36,7 +36,7 @@ class CRUD:
         return filters
 
     @classmethod
-    async def get_order_by(cls, order_by: str | None = None):
+    def get_order_by(cls, order_by: str | None = None):
         if order_by:
             if order_by[0] == "-":
                 order_by_field = getattr(cls, order_by[1:]).desc()
@@ -49,7 +49,7 @@ class CRUD:
         query = select(cls)
         if filters := await cls.get_filters(kwargs=kwargs):
             query = query.filter(and_(*filters))
-        if order_by_field := await cls.get_order_by(order_by=order_by):
+        if order_by_field := cls.get_order_by(order_by=order_by):
             query = query.order_by(order_by_field)
         return await session.execute(query)
 

@@ -11,8 +11,6 @@ services:
       - .env.example
     volumes:
       - .:/code
-    networks:
-      - custom
     depends_on:
       postgres:
         condition: service_healthy
@@ -25,14 +23,16 @@ services:
     env_file:
       - .env.example
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"
+        ]
       interval: 10s
       timeout: 3s
       retries: 3
     volumes:
       - postgres_data:/var/lib/postgresql/data:cached
-    networks:
-      - custom
 
   celery_worker:
     container_name: celery_worker
@@ -40,8 +40,10 @@ services:
     command: celery -A app.tools worker -l INFO
     env_file: .env.example
     depends_on:
-      - redis
-      - postgres
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     volumes:
       - .:/code
     links:
@@ -53,9 +55,12 @@ services:
     command: celery -A app.tools beat -l INFO
     env_file: .env.example
     depends_on:
-      - redis
-      - celery_worker
-      - postgres
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      celery_worker:
+        condition: service_started
     volumes:
       - .:/code
     links:
@@ -65,10 +70,5 @@ services:
     container_name: redis
     image: redis:latest
 
-
 volumes:
   postgres_data:
-
-networks:
-  custom:
-    driver: bridge
