@@ -3,6 +3,7 @@
 - user credentials validator (email, password, name, phone)
 - reset password with email verification provide
 - change password
+- create user balance in different currency, user can have only one balance in different currencies
 - top up user balance
 - withdraw money from balance
 - watch user balance

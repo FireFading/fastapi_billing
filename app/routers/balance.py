@@ -3,6 +3,7 @@ from app.controllers.balance import balance_controller
 from app.controllers.users import user_controller
 from app.database import get_session
 from app.schemas.transactions import ShowTransaction, TransactionTopUp, TransactionWithdraw
+from app.schemas.balance import CreateBalance
 from app.utils.messages import messages
 from fastapi import APIRouter, Depends, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -20,13 +21,15 @@ def get_jwt_settings():
 
 @router.post("/create/", status_code=status.HTTP_201_CREATED, summary="Create balance")
 async def create_balance(
+    balance_schema: CreateBalance =  Depends(),
     credentials: HTTPAuthorizationCredentials = Security(security),
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
 ):
+    print(balance_schema)
     authorize.jwt_required()
     user = await user_controller.get_or_404(email=authorize.get_jwt_subject(), session=session)
-    await balance_controller.create(user=user, session=session)  # type: ignore
+    await balance_controller.create(user=user, balance_schema=balance_schema, session=session)  # type: ignore
     return {"detail": messages.BALANCE_CREATED}
 
 
