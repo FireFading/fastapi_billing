@@ -10,7 +10,7 @@
 - watch all transactions for balance
 - transfer money between users
 - tracking prices for currencies
-- integration with external api to get information about currencies, responses get with aiohttp and aiodns asynchronously
+- integration with external api to get information about currencies, responses get asynchronously with aiohttp, aiodns and orjson
 - all features test with `pytest`
 
 ## Installation
@@ -48,13 +48,11 @@ OR `make down`
 - apply migrations in fastapi container
 ```bash
   alembic upgrade head
-``` 
+```
 - create new migrations in fastapi container
 ```bash
   alembic revision --autogenerate -m "<migration name>"
 ```
-
-> ***
 
 ## formatting and linting
 - run ufmt: `ufmt format .`
