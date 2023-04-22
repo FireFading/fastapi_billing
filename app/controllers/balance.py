@@ -20,7 +20,9 @@ class BalanceController:
         currency: CurrencyType = "USD",
     ) -> BalanceModel | HTTPException:
         if not (
-            user_balance := await BalanceModel.get(session=session, user_id=user_id, currency=currency)
+            user_balance := await BalanceModel.get(
+                session=session, user_id=user_id, currency=currency
+            )
         ):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=messages.BALANCE_NOT_FOUND
@@ -48,7 +50,9 @@ class BalanceController:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=messages.BALANCE_ALREADY_EXISTS,
             )
-        await BalanceModel(user_id=user.guid, currency=balance_schema.currency).create(session=session)
+        await BalanceModel(user_id=user.guid, currency=balance_schema.currency).create(
+            session=session
+        )
 
     @classmethod
     async def update(
@@ -61,10 +65,12 @@ class BalanceController:
     ) -> float:
         transfer = bool(recipient_id)
         recipient_id = recipient_id or user.guid
-        recipient_balance = await cls.get_or_404(user_id=recipient_id, session=session)
+        recipient_balance = await cls.get_or_404(
+            user_id=recipient_id, currency=transaction_schema.currency, session=session
+        )
         if need_check:
             sender_balance = (
-                await cls.get_or_404(user_id=user.guid, session=session)
+                await cls.get_or_404(user_id=user.guid, currency=transaction_schema.currency, session=session)
                 if transfer
                 else recipient_balance
             )

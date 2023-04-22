@@ -34,6 +34,7 @@ class Transaction(Base, CRUD):
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     amount = Column(Float)
+    currency = Column(CurrencyType, nullable=False, default='USD')
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"), nullable=False)

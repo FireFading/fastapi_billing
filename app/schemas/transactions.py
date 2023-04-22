@@ -6,6 +6,7 @@ from pydantic import BaseModel, EmailStr, validator
 
 class TransactionTopUp(BaseModel):
     amount: float
+    currency: str = "USD"
 
     @validator("amount")
     def validate_amount(cls, amount: float):
@@ -14,6 +15,7 @@ class TransactionTopUp(BaseModel):
 
 class TransactionWithdraw(BaseModel):
     amount: float
+    currency: str = "USD"
 
     @validator("amount")
     def validate_amount(cls, amount: float):
