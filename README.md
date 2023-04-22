@@ -38,6 +38,7 @@ OR `make down`
 ```bash
   docker exec -it postgres psql -U postgres
 ```
+OR `make postgres`
 
 ## Migrations
 - run docker containers
