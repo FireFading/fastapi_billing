@@ -35,9 +35,7 @@ class Urls:
     transfer = "/transfers/"
 
 
-def create_fake_token(
-    expires_in: datetime = datetime(1999, 1, 1), email: str = User.email
-) -> str:
+def create_fake_token(expires_in: datetime = datetime(1999, 1, 1), email: str = User.email) -> str:
     to_encode = {"exp": expires_in, "email": email, "is_active": True}
     return jwt.encode(to_encode, settings.secret_key, settings.algorithm)
 

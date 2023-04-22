@@ -3,17 +3,15 @@ from app.utils.messages import messages
 from fastapi import status
 from tests.settings import (
     Urls,
-    transfer_schema,
+    balance_after_transactions,
     top_up_balance_schema,
+    transfer_schema,
     withdraw_balance_schema,
-    balance_after_transactions
 )
 
 
 class TestTransfer:
-    async def test_transfer_to_another_user(
-        self, another_user, create_transactions, auth_client
-    ):
+    async def test_transfer_to_another_user(self, another_user, create_transactions, auth_client):
         response = auth_client.get(Urls.deposit)
         assert response.status_code == status.HTTP_200_OK
         assert float(response.json().get("deposit")) == top_up_balance_schema.get(

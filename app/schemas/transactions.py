@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app.schemas.users import Email
-from pydantic import BaseModel, validator, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 
 
 class TransactionTopUp(BaseModel):

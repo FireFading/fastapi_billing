@@ -12,17 +12,13 @@ from sqlalchemy_utils import UUIDType
 class Balance(Base, CRUD):
     __tablename__ = "balances"
 
-    guid = Column(
-        UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4
-    )
+    guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     deposit = Column(Float, default=0)
 
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"))
 
     user = relationship("User", back_populates="balance", lazy="selectin")
-    transactions = relationship(
-        "Transaction", back_populates="balance", lazy="selectin"
-    )
+    transactions = relationship("Transaction", back_populates="balance", lazy="selectin")
 
     def __repr__(self):
         return f"Deposit of {self.user}"
@@ -35,17 +31,13 @@ class Balance(Base, CRUD):
 class Transaction(Base, CRUD):
     __tablename__ = "transactions"
 
-    guid = Column(
-        UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4
-    )
+    guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     amount = Column(Float)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     user_id = Column(UUIDType(binary=False), ForeignKey("users.guid"), nullable=False)
 
-    balance_id = Column(
-        UUIDType(binary=False), ForeignKey("balances.guid"), nullable=False
-    )
+    balance_id = Column(UUIDType(binary=False), ForeignKey("balances.guid"), nullable=False)
 
     user = relationship("User")
     balance = relationship("Balance", back_populates="transactions")
@@ -53,12 +45,8 @@ class Transaction(Base, CRUD):
     async def create(self, session: AsyncSession, transfer: bool = False):
         print(transfer)
         if transfer:
-            await self.user.balance.update(
-                transaction_amount=self.amount, session=session
-            )
-            await self.balance.update(
-                transaction_amount=abs(self.amount), session=session
-            )
+            await self.user.balance.update(transaction_amount=self.amount, session=session)
+            await self.balance.update(transaction_amount=abs(self.amount), session=session)
         else:
             await self.balance.update(transaction_amount=self.amount, session=session)
         return await super().create(session=session)

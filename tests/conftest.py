@@ -12,11 +12,11 @@ from sqlalchemy.pool import StaticPool
 from tests.settings import (
     Urls,
     login_credentials_schema,
+    login_credentials_schema2,
     register_user_schema,
+    register_user_schema2,
     top_up_balance_schema,
     withdraw_balance_schema,
-    register_user_schema2,
-    login_credentials_schema2
 )
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite://"

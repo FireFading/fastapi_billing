@@ -11,15 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class BalanceController:
     @classmethod
-    async def get_or_404(
-        cls, user_id: uuid.UUID, session: AsyncSession
-    ) -> BalanceModel | HTTPException:
-        if not (
-            user_balance := await BalanceModel.get(session=session, user_id=user_id)
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail=messages.BALANCE_NOT_FOUND
-            )
+    async def get_or_404(cls, user_id: uuid.UUID, session: AsyncSession) -> BalanceModel | HTTPException:
+        if not (user_balance := await BalanceModel.get(session=session, user_id=user_id)):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.BALANCE_NOT_FOUND)
         return user_balance
 
     @staticmethod
@@ -55,15 +49,11 @@ class BalanceController:
         recipient_balance = await cls.get_or_404(user_id=recipient_id, session=session)
         if need_check:
             sender_balance = (
-                await cls.get_or_404(user_id=user.guid, session=session)
-                if recipient_id
-                else recipient_balance
+                await cls.get_or_404(user_id=user.guid, session=session) if recipient_id else recipient_balance
             )
             cls.check(deposit=sender_balance.deposit, amount=transaction_schema.amount)
-        await TransactionModel(
-            **transaction_schema.dict(), user=user, balance=recipient_balance
-        ).create(
-            session=session, transfer=transfer  # type: ignore
+        await TransactionModel(**transaction_schema.dict(), user=user, balance=recipient_balance).create(
+            session=session, transfer=transfer
         )
         return recipient_balance.deposit
 
