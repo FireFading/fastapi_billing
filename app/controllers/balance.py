@@ -45,12 +45,10 @@ class BalanceController:
         need_check: bool = False,
     ) -> float:
         transfer = bool(recipient_id)
-        recipient_id = user.guid if recipient_id is None else recipient_id
+        recipient_id = recipient_id or user.guid
         recipient_balance = await cls.get_or_404(user_id=recipient_id, session=session)
         if need_check:
-            sender_balance = (
-                await cls.get_or_404(user_id=user.guid, session=session) if recipient_id else recipient_balance
-            )
+            sender_balance = await cls.get_or_404(user_id=user.guid, session=session) if transfer else recipient_balance
             cls.check(deposit=sender_balance.deposit, amount=transaction_schema.amount)
         await TransactionModel(**transaction_schema.dict(), user=user, balance=recipient_balance).create(
             session=session, transfer=transfer

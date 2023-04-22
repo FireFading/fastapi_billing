@@ -85,7 +85,7 @@ async def change_password(
 @router.post(
     "/forgot-password/",
     status_code=status.HTTP_202_ACCEPTED,
-    summary="Запрос на получение письма с токеном для сброса пароля",
+    summary="Send requests for reset password token mail",
 )
 async def forgot_password(data: Email, session: AsyncSession = Depends(get_session)):
     user = await user_controller.get_or_404(email=data.email, session=session)
@@ -100,7 +100,7 @@ async def forgot_password(data: Email, session: AsyncSession = Depends(get_sessi
 @router.post(
     "/reset-password/{token}",
     status_code=status.HTTP_202_ACCEPTED,
-    summary="Сброс пароля",
+    summary="Reset password",
 )
 async def reset_password(token: str, data: UpdatePassword, session: AsyncSession = Depends(get_session)):
     if not user_controller.verify_token(token=token):
