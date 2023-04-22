@@ -41,7 +41,7 @@ services:
     env_file: .env.example
     depends_on:
       - redis
-      # - postgres
+      - postgres
     volumes:
       - .:/code
     links:
@@ -55,7 +55,7 @@ services:
     depends_on:
       - redis
       - celery_worker
-      # - postgres
+      - postgres
     volumes:
       - .:/code
     links:
