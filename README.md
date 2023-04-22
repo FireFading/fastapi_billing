@@ -14,6 +14,7 @@
 - all features test with `pytest`
 
 ## Installation
+- get api key from `https://freecurrencyapi.com`
 - in env.example all variables used in project, change it to .env, several variables that are common, already define as example, secret variables is empty
 
 ## Run Locally
