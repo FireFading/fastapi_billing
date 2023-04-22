@@ -34,6 +34,37 @@ services:
     networks:
       - custom
 
+  celery_worker:
+    container_name: celery_worker
+    build: .
+    command: celery -A app.tools worker -l INFO
+    env_file: .env.example
+    depends_on:
+      - redis
+      # - postgres
+    volumes:
+      - .:/code
+    links:
+      - redis
+
+  celery_beat:
+    container_name: celery_beat
+    build: .
+    command: celery -A app.tools beat -l INFO
+    env_file: .env.example
+    depends_on:
+      - redis
+      - celery_worker
+      # - postgres
+    volumes:
+      - .:/code
+    links:
+      - redis
+
+  redis:
+    container_name: redis
+    image: redis:latest
+
 
 volumes:
   postgres_data:

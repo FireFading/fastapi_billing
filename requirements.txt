@@ -12,6 +12,10 @@ pydantic[email]
 fastapi_jwt_auth
 fastapi_pagination
 httpx
+aiohttp[speedups]
+aiodns
+redis
+celery
 pytest
 pytest_asyncio
 pytest_mock

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app.crud import CRUD
 from app.database import Base
-from sqlalchemy import Column, DateTime, Float
+from sqlalchemy import Column, DateTime, Float, String
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import CurrencyType, UUIDType
@@ -14,6 +14,7 @@ class Currency(Base, CRUD):
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
     name = Column(CurrencyType, nullable=False)
+    symbol = Column(String, nullable=True)
 
     async def get_prices(
         self,

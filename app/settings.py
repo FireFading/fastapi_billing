@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     algorithm: str = Field(env="ALGORITHM")
     secret_key: str = Field(env="SECRET_KEY")
 
+    celery_broker: str = Field(env="CELERY_BROKER")
+    celery_result_backend: str = Field(env="CELERY_RESULT_BACKEND")
+
+    api_currency_key: str = Field(env="API_CURRENCY_KEY")
+
     mail_username: str = Field(env="MAIL_USERNAME")
     mail_password: str = Field(env="MAIL_PASSWORD")
     mail_port: int = Field(env="MAIL_PORT")
