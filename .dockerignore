@@ -15,7 +15,6 @@ __pycache__
 # Ignore dependencies and build artifacts
 node_modules
 *.log
-*.lock
 *.env
 
 # Ignore Docker-specific files

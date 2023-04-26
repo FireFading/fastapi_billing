@@ -12,6 +12,7 @@
 - tracking prices for currencies
 - integration with external api to get information about currencies, responses get asynchronously with aiohttp, aiodns and orjson
 - add tracking for currency prices
+- install dependencies with `poetry` or `pip`
 - all features test with `pytest`
 
 ## Installation
