@@ -33,5 +33,17 @@ class CurrencyController:
         )
         return prices[0].price
 
+    @classmethod
+    async def add_new_price(cls, session: AsyncSession, name: str, price: float):
+        currency = await cls.get_by_name(session=session, name=name)
+        await CurrencyPriceModel(
+            currency=currency,
+            price=price,
+        ).create(session=session)
+
+    @classmethod
+    async def update_prices(cls, session: AsyncSession, currency_data: dict):
+        pass
+
 
 currency_controller = CurrencyController()

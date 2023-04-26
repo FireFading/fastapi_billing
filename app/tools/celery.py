@@ -12,8 +12,12 @@ app.conf.timezone = "Europe/Moscow"
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "update_currencies": {
-        "task": "update_currencies",
+    "get_currencies": {
+        "task": "get_currencies",
+        "schedule": crontab(minute="*/2"),
+    },
+    "update_currency_prices": {
+        "task": "update_currency_prices",
         "schedule": crontab(minute="*/2"),
     },
 }

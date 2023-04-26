@@ -26,7 +26,6 @@ class BalanceController:
     @staticmethod
     def check(deposit: float, amount: float) -> HTTPException | None:
         if deposit < abs(amount):
-            print(deposit, amount)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=messages.INSUFFICIENT_FUNDS,

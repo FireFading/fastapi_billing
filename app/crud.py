@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -10,6 +10,12 @@ class CRUD:
         await session.flush()
         await session.commit()
         return self
+
+    @classmethod
+    async def bulk_create(cls, session: AsyncSession, instances: list):
+        stmt = insert(cls).values(instances)
+        await session.execute(stmt)
+        await session.commit()
 
     @classmethod
     async def get_filters(cls, kwargs: dict):
@@ -76,6 +82,11 @@ class CRUD:
 
     async def update(self, session: AsyncSession):
         await session.merge(self)
+        await session.commit()
+
+    async def bulk_update(self, session: AsyncSession, instances: list):
+        for instance in instances:
+            session.add(instance)
         await session.commit()
 
     @classmethod
