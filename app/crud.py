@@ -52,9 +52,7 @@ class CRUD:
             return order_by_field
 
     @classmethod
-    async def search(
-        cls, session: AsyncSession, kwargs: dict, order_by: str | None = None
-    ):
+    async def search(cls, session: AsyncSession, kwargs: dict, order_by: str | None = None):
         query = select(cls)
         if filters := await cls.get_filters(kwargs=kwargs):
             query = query.filter(and_(*filters))
@@ -69,11 +67,7 @@ class CRUD:
 
     async def get_or_create(self, session: AsyncSession):
         cls = type(self)
-        self_dict = {
-            field: value
-            for field, value in self.__dict__.items()
-            if field != "_sa_instance_state"
-        }
+        self_dict = {field: value for field, value in self.__dict__.items() if field != "_sa_instance_state"}
         instance = await cls.get(session=session, **self_dict)
         return instance or await self.create(session=session)
 
@@ -84,9 +78,7 @@ class CRUD:
 
     @classmethod
     async def filter(cls, session: AsyncSession, order_by: str | None = None, **kwargs):
-        if result := await cls.search(
-            session=session, order_by=order_by, kwargs=kwargs
-        ):
+        if result := await cls.search(session=session, order_by=order_by, kwargs=kwargs):
             return result.scalars().all()
 
     async def update(self, session: AsyncSession):

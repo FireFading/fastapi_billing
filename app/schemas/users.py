@@ -2,15 +2,13 @@ import uuid
 from datetime import datetime
 
 from app.schemas.balance import Balance
+from app.schemas.base import CustomConfig
 from app.utils.validators import validate_name, validate_password
 from pydantic import BaseModel, EmailStr, validator
 
 
-class Email(BaseModel):
+class Email(CustomConfig):
     email: EmailStr
-
-    class Config:
-        orm_mode = True
 
 
 class LoginCredentials(Email, BaseModel):
@@ -37,15 +35,12 @@ class CreateUser(Email, Name, Phone, BaseModel):
         return validate_password(password=password)
 
 
-class ShowUserOwnTransaction(BaseModel):
+class ShowUserOwnTransaction(CustomConfig):
     amount: float
     timestamp: datetime
 
-    class Config:
-        orm_mode = True
 
-
-class User(BaseModel):
+class User(CustomConfig):
     guid: uuid.UUID
     email: EmailStr | None
     phone: str | None
@@ -54,9 +49,6 @@ class User(BaseModel):
     balance: Balance
 
     transactions: list[ShowUserOwnTransaction]
-
-    class Config:
-        orm_mode = True
 
 
 class UpdatePassword(BaseModel):

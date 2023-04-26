@@ -7,9 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class CurrencyController:
     @classmethod
-    async def get_by_name(
-        cls, session: AsyncSession, name: str
-    ) -> CurrencyModel | None:
+    async def get_by_name(cls, session: AsyncSession, name: str) -> CurrencyModel | None:
         return await CurrencyModel.get(session=session, name=name)
 
     @classmethod
@@ -25,9 +23,7 @@ class CurrencyController:
         end_time: datetime = datetime.now(),
     ):
         currency = await cls.get_by_name(session=session, name=name)
-        return await currency.get_prices(
-            session=session, start_time=start_time, end_time=end_time
-        )
+        return await currency.get_prices(session=session, start_time=start_time, end_time=end_time)
 
     @classmethod
     async def get_current_price(cls, session: AsyncSession, name: str):

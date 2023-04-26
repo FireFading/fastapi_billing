@@ -1,12 +1,10 @@
+from app.schemas.base import CustomConfig
 from pydantic import BaseModel
 
 
-class Balance(BaseModel):
+class Balance(CustomConfig):
     deposit: float
     currency: str = "USD"
-
-    class Config:
-        orm_mode = True
 
 
 class CreateBalance(BaseModel):

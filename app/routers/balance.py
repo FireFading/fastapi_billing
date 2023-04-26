@@ -26,7 +26,6 @@ async def create_balance(
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
 ):
-    print(balance_schema)
     authorize.jwt_required()
     user = await user_controller.get_or_404(email=authorize.get_jwt_subject(), session=session)
     await balance_controller.create(user=user, balance_schema=balance_schema, session=session)  # type: ignore

@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from app.schemas.base import CustomConfig
 from app.schemas.users import Email
 from pydantic import BaseModel, EmailStr, validator
 
@@ -26,13 +27,10 @@ class Transfer(TransactionWithdraw):
     to: EmailStr
 
 
-class ShowTransaction(BaseModel):
+class ShowTransaction(CustomConfig):
     amount: float
     timestamp: datetime
     user: Email
-
-    class Config:
-        orm_mode = True
 
 
 class TransactionParams(BaseModel):

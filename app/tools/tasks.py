@@ -10,9 +10,7 @@ from celery import shared_task
 
 
 async def get_async(url: str, headers: dict, params: dict | None = None):
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(limit=100)
-    ) as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=100)) as session:
         async with session.get(url=url, headers=headers, params=params) as response:
             return await response.text()
 
@@ -22,18 +20,14 @@ async def load_currency_data(currency_data: set):
         instances = []
         for data in currency_data:
             full_name, symbol, code = data
-            currency = await CurrencyModel(
-                name=code, full_name=full_name, symbol=symbol
-            )
+            currency = await CurrencyModel(name=code, full_name=full_name, symbol=symbol)
             instances.append(currency)
         await CurrencyModel.bulk_create(session=session, instances=instances)
 
 
 async def update_currency_data(currency_data: dict):
     async with async_session() as session:
-        await currency_controller.update_prices(
-            session=session, currency_data=currency_data
-        )
+        await currency_controller.update_prices(session=session, currency_data=currency_data)
 
 
 async def get_currency_list():
@@ -62,9 +56,7 @@ def get_currencies():
 
 
 @shared_task(name="update_currency_prices")
-def update_currency_prices(
-    base_currency: str = "USD", currency_list: list[str] | None = None
-):
+def update_currency_prices(base_currency: str = "USD", currency_list: list[str] | None = None):
     url = "https://api.freecurrencyapi.com/v1/latest"
     headers = {"apikey": settings.api_currency_key}
     if not currency_list:
