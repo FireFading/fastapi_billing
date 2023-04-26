@@ -11,6 +11,7 @@
 - transfer money between users
 - tracking prices for currencies
 - integration with external api to get information about currencies, responses get asynchronously with aiohttp, aiodns and orjson
+- add tracking for currency prices
 - all features test with `pytest`
 
 ## Installation

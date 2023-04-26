@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from sqlalchemy import and_, insert, select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -11,11 +11,12 @@ class CRUD:
         await session.commit()
         return self
 
-    @classmethod
-    async def bulk_create(cls, session: AsyncSession, instances: list):
-        stmt = insert(cls).values(instances)
-        await session.execute(stmt)
+    @staticmethod
+    async def bulk_create(instances: Iterable, session: AsyncSession) -> Iterable:
+        session.add_all(instances)
+        await session.flush()
         await session.commit()
+        return instances
 
     @classmethod
     async def get_filters(cls, kwargs: dict):
@@ -51,7 +52,9 @@ class CRUD:
             return order_by_field
 
     @classmethod
-    async def search(cls, session: AsyncSession, kwargs: dict, order_by: str | None = None):
+    async def search(
+        cls, session: AsyncSession, kwargs: dict, order_by: str | None = None
+    ):
         query = select(cls)
         if filters := await cls.get_filters(kwargs=kwargs):
             query = query.filter(and_(*filters))
@@ -66,7 +69,11 @@ class CRUD:
 
     async def get_or_create(self, session: AsyncSession):
         cls = type(self)
-        self_dict = {field: value for field, value in self.__dict__.items() if field != "_sa_instance_state"}
+        self_dict = {
+            field: value
+            for field, value in self.__dict__.items()
+            if field != "_sa_instance_state"
+        }
         instance = await cls.get(session=session, **self_dict)
         return instance or await self.create(session=session)
 
@@ -77,17 +84,20 @@ class CRUD:
 
     @classmethod
     async def filter(cls, session: AsyncSession, order_by: str | None = None, **kwargs):
-        if result := await cls.search(session=session, order_by=order_by, kwargs=kwargs):
+        if result := await cls.search(
+            session=session, order_by=order_by, kwargs=kwargs
+        ):
             return result.scalars().all()
 
     async def update(self, session: AsyncSession):
         await session.merge(self)
         await session.commit()
 
-    async def bulk_update(self, session: AsyncSession, instances: list):
+    async def bulk_update(self, instances: Iterable, session: AsyncSession) -> Iterable:
         for instance in instances:
-            session.add(instance)
+            await session.merge(instance)
         await session.commit()
+        return instances
 
     @classmethod
     async def delete(cls, instances: list | object, session: AsyncSession):
@@ -96,4 +106,10 @@ class CRUD:
                 await session.delete(instance)
         else:
             await session.delete(instances)
+        await session.commit()
+
+    @staticmethod
+    async def bulk_delete(instances: Iterable, session: AsyncSession) -> None:
+        for instance in instances:
+            await session.delete(instance)
         await session.commit()
