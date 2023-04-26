@@ -57,7 +57,8 @@ OR `make postgres`
   alembic revision --autogenerate -m "<migration name>"
 ```
 
-## formatting and linting
+## Formatting and Linting
+- formatting & linting run in `github actions`
 - run ufmt: `ufmt format .`
 - run black: `black --config=configs/.black.toml app`
 - run ruff: `ruff check --config=configs/.ruff.toml --fix app`
@@ -65,5 +66,9 @@ OR `make postgres`
 
 - OR `nox` in root
 
-## run tests
-- `pytest .` OR `pytest ./tests` OR run `nox`
+## Run tests
+- all tests run in `github actions`
+```bash
+  pytest .
+```
+OR `pytest ./tests` OR run `nox`
