@@ -17,5 +17,4 @@ RUN pip install --upgrade pip
 RUN pip install poetry
 
 # Install project dependencies using Poetry
-RUN poetry config virtualenvs.create false && \
-    poetry install --only main
+RUN poetry config virtualenvs.create false && poetry install --only main
