@@ -26,7 +26,7 @@ class TestBalance:
 
     async def test_create_balance(self, auth_client):
         response = auth_client.post(Urls.create_balance)
-        # assert response.status_code == status.HTTP_201_CREATED
+        assert response.status_code == status.HTTP_201_CREATED
         assert response.json().get("detail") == messages.BALANCE_CREATED
 
         response = auth_client.get(Urls.deposit)

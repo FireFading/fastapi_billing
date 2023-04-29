@@ -2,8 +2,6 @@ python_dotenv
 stackprinter
 aiosqlite
 sqlalchemy
-sqlalchemy_utils
-babel
 asyncpg
 psycopg2-binary
 alembic
@@ -22,3 +20,5 @@ pytest_asyncio
 pytest_mock
 fastapi_mail
 uvicorn
+sqlalchemy_utils
+babel
