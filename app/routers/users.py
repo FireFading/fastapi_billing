@@ -66,19 +66,9 @@ async def change_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=messages.PASSWORDS_NOT_MATCH,
         )
-    email = authorize.get_jwt_subject()
-    user = await user_controller.get_or_404(email=email, session=session)
-    if not user.verify_password(password=data.old_password):
-        raise HTTPException(
-            status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
-            detail=messages.WRONG_OLD_PASSWORD,
-        )
-    if user.verify_password(password=data.password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=messages.NEW_PASSWORD_SIMILAR_OLD,
-        )
-    await user.update(session=session)
+    await user_controller.update_password(
+        email=authorize.get_jwt_subject(), change_password_schema=data, session=session
+    )
     return {"detail": messages.PASSWORD_UPDATED}
 
 
@@ -103,19 +93,12 @@ async def forgot_password(data: Email, session: AsyncSession = Depends(get_sessi
     summary="Reset password",
 )
 async def reset_password(token: str, data: UpdatePassword, session: AsyncSession = Depends(get_session)):
-    if not user_controller.verify_token(token=token):
-        raise HTTPException(
-            status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
-            detail=messages.INVALID_TOKEN,
-        )
-    email = user_controller.get_email_from_token(token=token)
-    user = await user_controller.get_or_404(email=email, session=session)
     if data.password != data.confirm_password:
         raise HTTPException(
             status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
             detail=messages.PASSWORDS_NOT_MATCH,
         )
-    await user.update(session=session)
+    await user_controller.reset_password(token=token, new_password=data.password, session=session)
     return {"detail": messages.PASSWORD_RESET}
 
 

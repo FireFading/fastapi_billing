@@ -1,18 +1,20 @@
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 
 from app.models.currencies import Currency as CurrencyModel
 from app.models.currencies import CurrencyPrice as CurrencyPriceModel
+from app.repositories.currencies import currency_repository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class CurrencyController:
     @classmethod
     async def get_by_name(cls, session: AsyncSession, name: str) -> CurrencyModel | None:
-        return await CurrencyModel.get(session=session, name=name)
+        return await currency_repository.get(session=session, name=name)
 
     @classmethod
-    async def get_all_available(cls, session: AsyncSession) -> list[CurrencyModel]:
-        return await CurrencyModel.all(session=session)
+    async def get_all_available(cls, session: AsyncSession) -> Iterable[CurrencyModel] | None:
+        return await currency_repository.all(session=session)
 
     @classmethod
     async def get_price_history(
@@ -23,7 +25,12 @@ class CurrencyController:
         end_time: datetime = datetime.now(),
     ):
         currency = await cls.get_by_name(session=session, name=name)
-        return await currency.get_prices(session=session, start_time=start_time, end_time=end_time)
+        return await currency_repository.get_prices(
+            currency_id=currency.id,
+            session=session,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
     @classmethod
     async def get_current_price(cls, session: AsyncSession, name: str):
@@ -36,10 +43,8 @@ class CurrencyController:
     @classmethod
     async def add_new_price(cls, session: AsyncSession, name: str, price: float):
         currency = await cls.get_by_name(session=session, name=name)
-        await CurrencyPriceModel(
-            currency=currency,
-            price=price,
-        ).create(session=session)
+        currency_price = CurrencyPriceModel(currency=currency, price=price)
+        await currency_repository.create(instance=currency_price, session=session)
 
     @classmethod
     async def update_prices(cls, session: AsyncSession, currency_data: dict):

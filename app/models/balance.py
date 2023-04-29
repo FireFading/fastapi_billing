@@ -1,15 +1,13 @@
 import uuid
 from datetime import datetime
 
-from app.crud import CRUD
 from app.database import Base
 from sqlalchemy import Column, DateTime, Float, ForeignKey
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import CurrencyType, UUIDType
 
 
-class Balance(Base, CRUD):
+class Balance(Base):
     __tablename__ = "balances"
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
@@ -24,12 +22,8 @@ class Balance(Base, CRUD):
     def __repr__(self):
         return f"Deposit of {self.user} in {self.currency}"
 
-    async def update(self, transaction_amount: float, session: AsyncSession):  # type: ignore
-        self.deposit += transaction_amount
-        return await super().update(session=session)
 
-
-class Transaction(Base, CRUD):
+class Transaction(Base):
     __tablename__ = "transactions"
 
     guid = Column(UUIDType(binary=False), primary_key=True, index=True, default=uuid.uuid4)
@@ -43,11 +37,3 @@ class Transaction(Base, CRUD):
 
     user = relationship("User")
     balance = relationship("Balance", back_populates="transactions")
-
-    async def create(self, session: AsyncSession, transfer: bool = False):
-        if transfer:
-            await self.user.balance.update(transaction_amount=self.amount, session=session)
-            await self.balance.update(transaction_amount=abs(self.amount), session=session)
-        else:
-            await self.balance.update(transaction_amount=self.amount, session=session)
-        return await super().create(session=session)
