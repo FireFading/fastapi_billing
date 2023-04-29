@@ -8,7 +8,11 @@ class BalanceRepository(BaseRepository):
     def __init__(self):
         super().__init__(model=BalanceModel)
 
-    async def update(self, balance: BalanceModel, transaction_amount: float, session: AsyncSession):  # type: ignore
+    async def downgrade(self, balance: BalanceModel, transaction_amount: float, session: AsyncSession):
+        balance.deposit -= transaction_amount
+        return await super().update(instance=balance, session=session)
+
+    async def upgrade(self, balance: BalanceModel, transaction_amount: float, session: AsyncSession):
         balance.deposit += transaction_amount
         return await super().update(instance=balance, session=session)
 

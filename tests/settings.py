@@ -65,11 +65,11 @@ login_credentials_schema2 = {
 wrong_login_credentials_schema = {"email": User.email, "password": User.wrong_password}
 
 top_up_balance_schema = {"amount": 100}
-withdraw_balance_schema = {"amount": -10}
+withdraw_balance_schema = {"amount": 10}
 
-transfer_schema = {"to": register_user_schema2.get("email"), "amount": -70}
+transfer_schema = {"to": register_user_schema2.get("email"), "amount": 70}
 
-balance_after_transactions = top_up_balance_schema.get("amount") + withdraw_balance_schema.get("amount")
+balance_after_transactions = top_up_balance_schema.get("amount") - withdraw_balance_schema.get("amount")
 
 change_password_schema = {
     "old_password": User.password,

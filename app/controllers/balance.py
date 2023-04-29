@@ -5,7 +5,7 @@ from app.models.balance import Transaction as TransactionModel
 from app.models.users import User as UserModel
 from app.repositories.balance import balance_repository, transaction_repository
 from app.schemas.balance import CreateBalance
-from app.schemas.transactions import TransactionTopUp, TransactionWithdraw
+from app.schemas.transactions import Transaction
 from app.utils.messages import messages
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,7 +30,7 @@ class BalanceController:
 
     @staticmethod
     def check(deposit: float, amount: float) -> HTTPException | None:
-        if deposit < abs(amount):
+        if deposit < amount:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=messages.INSUFFICIENT_FUNDS,
@@ -50,43 +50,78 @@ class BalanceController:
         await balance_repository.create(instance=balance, session=session)
 
     @classmethod
-    async def update(
+    async def create_transaction(
         cls,
         user: UserModel,
-        transaction_schema: TransactionTopUp | TransactionWithdraw,
+        balance: BalanceModel,
+        transaction_schema: Transaction,
         session: AsyncSession,
-        recipient_id: uuid.UUID | None = None,
-        need_check: bool = False,
-    ) -> float:
-        transfer = bool(recipient_id)
-        recipient_id = recipient_id or user.guid
+    ):
+        transaction = TransactionModel(**transaction_schema.dict(), user=user, balance=balance)
+        await transaction_repository.create(instance=transaction, session=session)
+
+    @classmethod
+    async def top_up(cls, user: UserModel, transaction_schema: Transaction, session: AsyncSession):
+        balance = await cls.get_or_404(user_id=user.guid, currency=transaction_schema.currency, session=session)
+        await balance_repository.upgrade(
+            balance=balance,
+            transaction_amount=transaction_schema.amount,
+            session=session,
+        )
+        await cls.create_transaction(
+            user=user,
+            balance=balance,
+            transaction_schema=transaction_schema,
+            session=session,
+        )
+        return balance.deposit
+
+    @classmethod
+    async def withdraw(cls, user: UserModel, transaction_schema: Transaction, session: AsyncSession):
+        balance = await cls.get_or_404(user_id=user.guid, currency=transaction_schema.currency, session=session)
+        cls.check(deposit=balance.deposit, amount=transaction_schema.amount)
+        await balance_repository.downgrade(
+            balance=balance,
+            transaction_amount=transaction_schema.amount,
+            session=session,
+        )
+        await cls.create_transaction(
+            user=user,
+            balance=balance,
+            transaction_schema=transaction_schema,
+            session=session,
+        )
+        return balance.deposit
+
+    @classmethod
+    async def transfer(
+        cls,
+        user: UserModel,
+        transaction_schema: Transaction,
+        session: AsyncSession,
+        recipient_id: uuid.UUID,
+    ):
         recipient_balance = await cls.get_or_404(
             user_id=recipient_id, currency=transaction_schema.currency, session=session
         )
-        if need_check:
-            sender_balance = (
-                await cls.get_or_404(
-                    user_id=user.guid,
-                    currency=transaction_schema.currency,
-                    session=session,
-                )
-                if transfer
-                else recipient_balance
-            )
-            cls.check(deposit=sender_balance.deposit, amount=transaction_schema.amount)
-        transaction = TransactionModel(**transaction_schema.dict(), user=user, balance=recipient_balance)
-        if transfer:
-            await balance_repository.update(
-                balance=sender_balance,
-                transaction_amount=transaction_schema.amount,
-                session=session,
-            )
-        await balance_repository.update(
+        sender_balance = await cls.get_or_404(user_id=user.guid, currency=transaction_schema.currency, session=session)
+        cls.check(deposit=sender_balance.deposit, amount=transaction_schema.amount)
+        await balance_repository.downgrade(
+            balance=user.balance,
+            transaction_amount=transaction_schema.amount,
+            session=session,
+        )
+        await balance_repository.upgrade(
             balance=recipient_balance,
             transaction_amount=transaction_schema.amount,
             session=session,
         )
-        await transaction_repository.create(instance=transaction, session=session)
+        await cls.create_transaction(
+            user=user,
+            balance=recipient_balance,
+            transaction_schema=transaction_schema,
+            session=session,
+        )
         return recipient_balance.deposit
 
 

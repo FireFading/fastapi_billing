@@ -3,7 +3,7 @@ from app.controllers.balance import balance_controller
 from app.controllers.users import user_controller
 from app.database import get_session
 from app.schemas.balance import CreateBalance
-from app.schemas.transactions import ShowTransaction, TransactionTopUp, TransactionWithdraw
+from app.schemas.transactions import ShowTransaction, Transaction
 from app.utils.messages import messages
 from fastapi import APIRouter, Depends, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -38,15 +38,15 @@ async def create_balance(
     summary="Accruing funds to the own balance",
 )
 async def top_up_balance(
-    top_up_schema: TransactionTopUp,
+    top_up_schema: Transaction,
     credentials: HTTPAuthorizationCredentials = Security(security),
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
 ):
     authorize.jwt_required()
     user = await user_controller.get_or_404(email=authorize.get_jwt_subject(), session=session)
-    deposit = await balance_controller.update(
-        user=user,  # type: ignore
+    deposit = await balance_controller.top_up(
+        user=user,  # type:ignore
         session=session,
         transaction_schema=top_up_schema,
     )
@@ -72,7 +72,7 @@ async def get_deposit_amount(
     summary="Withdrawing funds from the own balance",
 )
 async def withdraw_balance(
-    withdraw_schema: TransactionWithdraw,
+    withdraw_schema: Transaction,
     credentials: HTTPAuthorizationCredentials = Security(security),
     session: AsyncSession = Depends(get_session),
     authorize: AuthJWT = Depends(),
@@ -80,11 +80,10 @@ async def withdraw_balance(
     authorize.jwt_required()
     email = authorize.get_jwt_subject()
     user = await user_controller.get_or_404(email=email, session=session)
-    deposit = await balance_controller.update(
-        user=user,  # type: ignore
+    deposit = await balance_controller.withdraw(
+        user=user,  # type:ignore
         session=session,
         transaction_schema=withdraw_schema,
-        need_check=True,
     )
     return {"deposit": deposit, "detail": messages.BALANCE_WITHDRAW}
 
