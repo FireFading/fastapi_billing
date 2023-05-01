@@ -31,5 +31,7 @@ class Messages:
 
     ACCESS_DENIED = "Access denied"
 
+    CURRENCY_NOT_FOUND = "Currency not found"
+
 
 messages = Messages()

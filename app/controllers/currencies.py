@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from app.models.currencies import Currency as CurrencyModel
 from app.models.currencies import CurrencyPrice as CurrencyPriceModel
 from app.repositories.currencies import currency_repository
+from app.utils.messages import messages
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -24,7 +26,11 @@ class CurrencyController:
         start_time: datetime | None = None,
         end_time: datetime = datetime.now(),
     ):
-        currency = await cls.get_by_name(session=session, name=name)
+        if not (currency := await cls.get_by_name(session=session, name=name)):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=messages.CURRENCY_NOT_FOUND,
+            )
         return await currency_repository.get_prices(
             currency_id=currency.id,
             session=session,
@@ -39,6 +45,14 @@ class CurrencyController:
             session=session, start_time=start_time, name=name
         )
         return prices[0].price
+
+    @classmethod
+    async def get_current_prices_for_all(cls, session):
+        currencies = await cls.get_all_available(session=session)
+        prices = {}
+        for currency in currencies:
+            prices[currency.name] = await cls.get_current_price(session=session, name=currency.name)
+        return prices
 
     @classmethod
     async def add_new_price(cls, session: AsyncSession, name: str, price: float):
