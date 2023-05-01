@@ -1,12 +1,9 @@
-import pytest
 from app.utils.messages import messages
 from fastapi import status
 from tests.settings import (
     Urls,
     balance_after_transactions,
-    top_up_balance_schema,
     transfer_schema,
-    withdraw_balance_schema,
 )
 
 
