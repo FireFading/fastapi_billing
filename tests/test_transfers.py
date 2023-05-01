@@ -1,10 +1,6 @@
 from app.utils.messages import messages
 from fastapi import status
-from tests.settings import (
-    Urls,
-    balance_after_transactions,
-    transfer_schema,
-)
+from tests.settings import Urls, balance_after_transactions, transfer_schema
 
 
 class TestTransfer:

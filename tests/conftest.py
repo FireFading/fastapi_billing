@@ -51,9 +51,7 @@ async def db_session(app: FastAPI) -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture
-async def client(
-    app: FastAPI, db_session: Session, mocker: MockerFixture
-) -> AsyncGenerator | TestClient:
+async def client(app: FastAPI, db_session: Session, mocker: MockerFixture) -> AsyncGenerator | TestClient:
     mocker.patch("app.routers.users.send_mail", return_value=True)
 
     async def _get_test_db():
@@ -90,9 +88,7 @@ async def another_user(client: AsyncGenerator | TestClient) -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture
-async def auth_client(
-    register_user, client: AsyncGenerator | TestClient
-) -> AsyncGenerator | TestClient:
+async def auth_client(register_user, client: AsyncGenerator | TestClient) -> AsyncGenerator | TestClient:
     response = client.post(Urls.login, json=login_credentials_schema)
     assert response.status_code == status.HTTP_200_OK
     access_token = response.json().get("access_token")
