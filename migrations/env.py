@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.models.users import *
 from app.models.balance import *
+from app.models.transactions import *
 from app.models.currencies import *
 from alembic import context
 from app.config import settings

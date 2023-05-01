@@ -1,9 +1,10 @@
 import uuid
 
 from app.models.balance import Balance as BalanceModel
-from app.models.balance import Transaction as TransactionModel
+from app.models.transactions import Transaction as TransactionModel
 from app.models.users import User as UserModel
-from app.repositories.balance import balance_repository, transaction_repository
+from app.repositories.balance import balance_repository
+from app.repositories.transactions import transaction_repository
 from app.schemas.balance import CreateBalance
 from app.schemas.transactions import Transaction
 from app.utils.messages import messages
