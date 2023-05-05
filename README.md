@@ -15,6 +15,8 @@
 - install dependencies with `poetry` or `pip`
 - all features test with `pytest`, coverage about 90%
 
+![image](https://user-images.githubusercontent.com/91421235/236490034-eb265e67-24d8-47a0-90ca-84dbdeb51a21.png)
+
 ## Installation
 - get api key from `https://freecurrencyapi.com`
 - in env.example all variables used in project, change it to .env, several variables that are common, already define as example, secret variables is empty
