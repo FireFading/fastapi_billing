@@ -22,3 +22,4 @@ fastapi_mail
 uvicorn
 sqlalchemy_utils
 babel
+coverage

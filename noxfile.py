@@ -38,3 +38,10 @@ def run_tests(session: nox.Session) -> None:
     load_dotenv(dotenv_path="./.env.example")
     session.install("-r", "requirements.txt")
     session.run("pytest")
+
+
+@nox.session
+def coverage(session: nox.Session) -> None:
+    load_dotenv(dotenv_path="./.env.example")
+    session.install("-r", "requirements.txt")
+    session.run("coverage", "run", "-m", "pytest")

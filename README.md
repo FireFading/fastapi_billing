@@ -13,7 +13,7 @@
 - integration with external api to get information about currencies, responses get asynchronously with `aiohttp`, `aiodns` and `orjson`
 - add tracking for currency prices
 - install dependencies with `poetry` or `pip`
-- all features test with `pytest`
+- all features test with `pytest`, coverage about 90%
 
 ## Installation
 - get api key from `https://freecurrencyapi.com`
@@ -72,3 +72,8 @@ OR `make postgres`
   pytest .
 ```
 OR `pytest ./tests` OR run `nox`
+- run coverage
+```bash
+  coverage run -m pytest
+```
+OR in `nox`
